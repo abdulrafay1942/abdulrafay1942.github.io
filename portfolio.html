@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abdul Rafay Chaudhary — ML Developer</title>
+<style>
+  :root {
+    --bg:       #080C14;
+    --surface:  #0F1623;
+    --border:   #1E2A3A;
+    --purple:   #7C3AED;
+    --purple2:  #A78BFA;
+    --purple3:  #EDE9FE;
+    --text:     #E2E8F0;
+    --muted:    #64748B;
+    --accent:   #06B6D4;
+    --green:    #10B981;
+    --red:      #F43F5E;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(8,12,20,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--purple2);
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 6rem 2rem 4rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid rgba(124,58,237,0.4);
+    color: var(--purple2);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-name {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-name span { color: var(--purple2); }
+
+  .hero-title {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: var(--muted);
+    margin-bottom: 2rem;
+    font-weight: 400;
+  }
+
+  .hero-desc {
+    max-width: 560px;
+    margin: 0 auto 2.5rem;
+    color: #94A3B8;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 0.75rem 1.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-primary {
+    background: var(--purple);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: #6D28D9; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { border-color: var(--purple2); color: var(--purple2); }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    margin-top: 4rem;
+    flex-wrap: wrap;
+  }
+
+  .stat { text-align: center; }
+  .stat-number { font-size: 2rem; font-weight: 800; color: var(--purple2); }
+  .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.2rem; }
+
+  /* ── SECTIONS ── */
+  section { padding: 5rem 2rem; position: relative; z-index: 1; }
+
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  .section-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--purple2);
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .section-title {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  .section-line {
+    width: 40px;
+    height: 3px;
+    background: var(--purple);
+    border-radius: 2px;
+    margin-bottom: 3rem;
+  }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: #94A3B8;
+    margin-bottom: 1rem;
+    line-height: 1.8;
+  }
+
+  .about-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .link-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.9rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--purple2);
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+
+  .link-chip:hover { border-color: var(--purple2); }
+
+  .info-list { list-style: none; }
+  .info-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .info-list li:last-child { border-bottom: none; }
+  .info-label { color: var(--muted); }
+  .info-value { color: var(--text); font-weight: 500; }
+
+  /* ── PROJECTS ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.75rem;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--accent));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .project-card:hover { border-color: var(--purple); transform: translateY(-2px); }
+  .project-card:hover::before { opacity: 1; }
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .project-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .badge-live { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .badge-ml { background: rgba(124,58,237,0.15); color: var(--purple2); border: 1px solid rgba(124,58,237,0.3); }
+
+  .project-desc {
+    font-size: 0.88rem;
+    color: #94A3B8;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .project-metric {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--green);
+    background: rgba(16,185,129,0.1);
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .tag {
+    font-size: 0.72rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(124,58,237,0.1);
+    color: var(--purple2);
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .project-links {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .project-link {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.2s;
+  }
+
+  .project-link:hover { color: var(--purple2); }
+
+  /* ── SKILLS ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .skill-group {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+  }
+
+  .skill-group-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--purple2);
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .skill-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .skill-pill {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.75rem;
+    background: rgba(124,58,237,0.08);
+    border: 1px solid rgba(124,58,237,0.2);
+    color: var(--text);
+    border-radius: 6px;
+  }
+
+  /* ── EXPERIENCE ── */
+  .timeline { position: relative; }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .timeline-item {
+    padding-left: 2rem;
+    padding-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -4px; top: 6px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--purple);
+    border: 2px solid var(--bg);
+  }
+
+  .timeline-date {
+    font-size: 0.75rem;
+    color: var(--purple2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+
+  .timeline-role {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+
+  .timeline-company {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .timeline-bullets { list-style: none; }
+
+  .timeline-bullets li {
+    font-size: 0.88rem;
+    color: #94A3B8;
+    padding: 0.3rem 0;
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.6;
+  }
+
+  .timeline-bullets li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--purple2);
+    font-size: 0.7rem;
+    top: 0.4rem;
+  }
+
+  /* ── CERTIFICATIONS ── */
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .cert-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .cert-icon {
+    width: 42px; height: 42px;
+    border-radius: 8px;
+    background: rgba(124,58,237,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .cert-name { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+  .cert-issuer { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+  .cert-date { font-size: 0.72rem; color: var(--purple2); margin-top: 0.2rem; }
+
+  /* ── CONTACT ── */
+  #contact { text-align: center; }
+
+  .contact-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .contact-card p {
+    color: #94A3B8;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted);
+    position: relative;
+    z-index: 1;
+  }
+
+  footer a { color: var(--purple2); text-decoration: none; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    nav { padding: 1rem; }
+    .nav-links { gap: 1rem; }
+  }
+
+  @media (max-width: 480px) {
+    .skills-grid { grid-template-columns: 1fr; }
+    .nav-links li:nth-child(n+4) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AR.</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div>
+    <div class="hero-tag">Open to Remote Internships</div>
+    <h1 class="hero-name">Abdul Rafay<br><span>Chaudhary</span></h1>
+    <p class="hero-title">ML Developer &nbsp;·&nbsp; CS Student @ GC University Faisalabad</p>
+    <p class="hero-desc">
+      I build machine learning models that work — not just in theory, but with real numbers to prove it.
+      Python, Scikit-learn, TensorFlow, and FastAPI are my tools. Deployed apps are my output.
+    </p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn btn-primary">View Projects</a>
+      <a href="mailto:abdulrafaychaudhary60@gmail.com" class="btn btn-ghost">Get in Touch</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-number">96.5%</div>
+        <div class="stat-label">Model Accuracy</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">5+</div>
+        <div class="stat-label">ML Projects</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">2</div>
+        <div class="stat-label">Internships</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">1</div>
+        <div class="stat-label">Live Deployment</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <span class="section-tag">Who I am</span>
+    <h2 class="section-title">About Me</h2>
+    <div class="section-line"></div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          I'm a Fourth-year Computer Science student at GC University Faisalabad (7th semester out of 8),
+          specializing in machine learning and data science.
+        </p>
+        <p>
+          I've completed two AI internships — CodeAlpha and DecodeLabs — where I built end-to-end ML
+          projects using Python, TensorFlow, Keras, and Scikit-learn. My most recent project is a
+          breast cancer prediction web app deployed live on Railway with 96.5% accuracy.
+        </p>
+        <p>
+          I'm currently seeking remote ML or data science internship opportunities where I can
+          contribute real value from day one.
+        </p>
+        <div class="about-links">
+          <a href="https://github.com/abdulrafay1942" target="_blank" class="link-chip">⌥ GitHub</a>
+          <a href="https://www.linkedin.com/in/abdul-rafay-04397332a" target="_blank" class="link-chip">🔗 LinkedIn</a>
+          <a href="https://www.kaggle.com/abdulrafay1942" target="_blank" class="link-chip">◈ Kaggle</a>
+          <a href="mailto:abdulrafaychaudhary60@gmail.com" class="link-chip">✉ Email</a>
+        </div>
+      </div>
+      <div>
+        <ul class="info-list">
+          <li><span class="info-label">Degree</span><span class="info-value">BS Computer Science</span></li>
+          <li><span class="info-label">University</span><span class="info-value">GC University Faisalabad</span></li>
+          <li><span class="info-label">Semester</span><span class="info-value">7th of 8</span></li>
+          <li><span class="info-label">Location</span><span class="info-value">Multan, Pakistan</span></li>
+          <li><span class="info-label">Availability</span><span class="info-value">Remote · Immediate</span></li>
+          <li><span class="info-label">Focus</span><span class="info-value">ML · Data Science · FastAPI</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" style="background: var(--surface);">
+  <div class="container">
+    <span class="section-tag">What I've built</span>
+    <h2 class="section-title">Projects</h2>
+    <div class="section-line"></div>
+    <div class="projects-grid">
+
+      <!-- Project 1 -->
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-title">Breast Cancer Prediction App</div>
+          <span class="project-badge badge-live">Live</span>
+        </div>
+        <p class="project-desc">
+          Full-stack ML web app predicting tumor malignancy from 30 cell measurements.
+          Logistic Regression trained on 569 patient records. Returns prediction with confidence score in real time.
+        </p>
+        <div class="project-metric">✓ 96.5% Accuracy</div>
+        <div class="project-tags">
+          <span class="tag">Python</span><span class="tag">FastAPI</span>
+          <span class="tag">Scikit-learn</span><span class="tag">Railway</span>
+        </div>
+        <div class="project-links">
+          <a href="https://breast-cancer-predictor-production.up.railway.app" target="_blank" class="project-link">↗ Live Demo</a>
+          <a href="https://github.com/abdulrafay1942/breast-cancer-predictor" target="_blank" class="project-link">↗ GitHub</a>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-title">Handwritten Character Recognizer</div>
+          <span class="project-badge badge-ml">CNN</span>
+        </div>
+        <p class="project-desc">
+          Convolutional Neural Network trained on 70,000 MNIST handwritten digit images.
+          Implemented Conv2D, MaxPooling, Adam optimizer, and Early Stopping.
+        </p>
+        <div class="project-metric">✓ 97–99% Accuracy</div>
+        <div class="project-tags">
+          <span class="tag">TensorFlow</span><span class="tag">Keras</span>
+          <span class="tag">CNN</span><span class="tag">NumPy</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/abdulrafay1942/Handwritten-Character-Recognizer" target="_blank" class="project-link">↗ GitHub</a>
+        </div>
+      </div>
+
+      <!-- Project 3 -->
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-title">Credit Scoring Model</div>
+          <span class="project-badge badge-ml">Classification</span>
+        </div>
+        <p class="project-desc">
+          Binary classifier predicting loan applicant creditworthiness.
+          Compared Random Forest vs Logistic Regression. Evaluated with ROC-AUC, precision, and recall.
+        </p>
+        <div class="project-tags">
+          <span class="tag">Scikit-learn</span><span class="tag">Pandas</span>
+          <span class="tag">Random Forest</span><span class="tag">ROC-AUC</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/abdulrafay1942/Credit-Scoring-Model" target="_blank" class="project-link">↗ GitHub</a>
+        </div>
+      </div>
+
+      <!-- Project 4 -->
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-title">Disease Prediction from Medical Data</div>
+          <span class="project-badge badge-ml">ML Pipeline</span>
+        </div>
+        <p class="project-desc">
+          Supervised ML pipeline predicting disease presence from structured patient records.
+          Full EDA, missing value handling, feature visualization, and cross-validation optimization.
+        </p>
+        <div class="project-tags">
+          <span class="tag">Scikit-learn</span><span class="tag">Pandas</span>
+          <span class="tag">Matplotlib</span><span class="tag">EDA</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/abdulrafay1942/Disease-Prediction-from-Medical-Data" target="_blank" class="project-link">↗ GitHub</a>
+        </div>
+      </div>
+
+      <!-- Project 5 -->
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-title">Movie Recommendation System</div>
+          <span class="project-badge badge-ml">Recommender</span>
+        </div>
+        <p class="project-desc">
+          Content-based recommendation engine on 9,742 MovieLens titles and 100,836 ratings.
+          One-hot encodes 19 genres, computes cosine similarity, returns Top 10 with similarity scores.
+        </p>
+        <div class="project-tags">
+          <span class="tag">Pandas</span><span class="tag">Scikit-learn</span>
+          <span class="tag">Cosine Similarity</span><span class="tag">Matplotlib</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/abdulrafay1942/DecodeLabs-Internship" target="_blank" class="project-link">↗ GitHub</a>
+        </div>
+      </div>
+
+      <!-- Project 6 -->
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-title">Iris Classification Model</div>
+          <span class="project-badge badge-ml">Classification</span>
+        </div>
+        <p class="project-desc">
+          Multi-class Decision Tree classifier on the Iris dataset (150 samples, 4 features).
+          Includes confusion matrix, classification report, and sample prediction.
+        </p>
+        <div class="project-metric">✓ 96.67% Accuracy</div>
+        <div class="project-tags">
+          <span class="tag">Scikit-learn</span><span class="tag">Pandas</span>
+          <span class="tag">Seaborn</span><span class="tag">Decision Tree</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/abdulrafay1942/DecodeLabs-Internship" target="_blank" class="project-link">↗ GitHub</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <span class="section-tag">What I work with</span>
+    <h2 class="section-title">Skills</h2>
+    <div class="section-line"></div>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <div class="skill-group-title">Languages</div>
+        <div class="skill-pills">
+          <span class="skill-pill">Python</span>
+          <span class="skill-pill">C++</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">ML & Data</div>
+        <div class="skill-pills">
+          <span class="skill-pill">Scikit-learn</span>
+          <span class="skill-pill">TensorFlow</span>
+          <span class="skill-pill">Keras</span>
+          <span class="skill-pill">Pandas</span>
+          <span class="skill-pill">NumPy</span>
+          <span class="skill-pill">Matplotlib</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Tools & Platforms</div>
+        <div class="skill-pills">
+          <span class="skill-pill">FastAPI</span>
+          <span class="skill-pill">Git</span>
+          <span class="skill-pill">GitHub</span>
+          <span class="skill-pill">Jupyter</span>
+          <span class="skill-pill">Google Colab</span>
+          <span class="skill-pill">Railway</span>
+          <span class="skill-pill">Kaggle</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">ML Concepts</div>
+        <div class="skill-pills">
+          <span class="skill-pill">Classification</span>
+          <span class="skill-pill">Regression</span>
+          <span class="skill-pill">CNN</span>
+          <span class="skill-pill">EDA</span>
+          <span class="skill-pill">Feature Engineering</span>
+          <span class="skill-pill">Cross-Validation</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Evaluation</div>
+        <div class="skill-pills">
+          <span class="skill-pill">ROC-AUC</span>
+          <span class="skill-pill">Precision & Recall</span>
+          <span class="skill-pill">Confusion Matrix</span>
+          <span class="skill-pill">Accuracy</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Currently Learning</div>
+        <div class="skill-pills">
+          <span class="skill-pill">SQL</span>
+          <span class="skill-pill">NLP</span>
+          <span class="skill-pill">Neural Networks</span>
+          <span class="skill-pill">Flask</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" style="background: var(--surface);">
+  <div class="container">
+    <span class="section-tag">Where I've worked</span>
+    <h2 class="section-title">Experience</h2>
+    <div class="section-line"></div>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-date">May 2026 — June 2026</div>
+        <div class="timeline-role">Artificial Intelligence Intern</div>
+        <div class="timeline-company">DecodeLabs · Remote Virtual Internship</div>
+        <ul class="timeline-bullets">
+          <li>Built a content-based movie recommendation system on 9,742 MovieLens titles using cosine similarity</li>
+          <li>Trained an Iris classification model achieving 96.67% accuracy using Decision Tree</li>
+          <li>Developed a rule-based chatbot demonstrating Python control flow and conversational logic</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2025</div>
+        <div class="timeline-role">Machine Learning Intern</div>
+        <div class="timeline-company">CodeAlpha · Remote Internship</div>
+        <ul class="timeline-bullets">
+          <li>Built a CNN achieving 97–99% accuracy on 70,000 MNIST images using TensorFlow/Keras</li>
+          <li>Developed a credit scoring binary classifier evaluated with ROC-AUC, precision, and recall</li>
+          <li>Built a supervised ML pipeline for disease prediction with full EDA and cross-validation</li>
+          <li>All 3 projects published on GitHub with complete documentation</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="container">
+    <span class="section-tag">Credentials</span>
+    <h2 class="section-title">Certifications</h2>
+    <div class="section-line"></div>
+    <div class="cert-grid">
+      <div class="cert-card">
+        <div class="cert-icon">🎓</div>
+        <div>
+          <div class="cert-name">Python 101 for Data Science</div>
+          <div class="cert-issuer">IBM · CognitiveClass.ai</div>
+          <div class="cert-date">October 2024</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon">🤖</div>
+        <div>
+          <div class="cert-name">AI Virtual Internship</div>
+          <div class="cert-issuer">DecodeLabs · Student ID: AI0526286</div>
+          <div class="cert-date">June 2026</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon">⚙️</div>
+        <div>
+          <div class="cert-name">ML Internship Certificate</div>
+          <div class="cert-issuer">CodeAlpha · Remote</div>
+          <div class="cert-date">2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="background: var(--surface);">
+  <div class="container">
+    <span class="section-tag">Let's connect</span>
+    <h2 class="section-title">Get In Touch</h2>
+    <div class="section-line" style="margin: 0 auto 3rem;"></div>
+    <div class="contact-card">
+      <p>
+        I'm actively looking for remote ML or data science internship opportunities.
+        If you have a project, role, or collaboration in mind — I'd love to hear from you.
+      </p>
+      <div class="contact-links">
+        <a href="mailto:abdulrafaychaudhary60@gmail.com" class="btn btn-primary">✉ Send Email</a>
+        <a href="https://www.linkedin.com/in/abdul-rafay-04397332a" target="_blank" class="btn btn-ghost">LinkedIn</a>
+        <a href="https://github.com/abdulrafay1942" target="_blank" class="btn btn-ghost">GitHub</a>
+        <a href="https://www.kaggle.com/abdulrafay1942" target="_blank" class="btn btn-ghost">Kaggle</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  Built by <a href="https://github.com/abdulrafay1942">Abdul Rafay Chaudhary</a> &nbsp;·&nbsp; Faisalabad, Pakistan &nbsp;·&nbsp; Open to remote opportunities
+</footer>
+
+</body>
+</html>
