@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breast Cancer Predictor</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 40px 20px; }
+  .container { max-width: 920px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 36px; }
+  header h1 { font-size: 1.9rem; color: #a78bfa; margin-bottom: 8px; }
+  header p { color: #94a3b8; font-size: 0.95rem; }
+  .badge { display: inline-block; background: #1e1b4b; border: 1px solid #7c3aed; color: #a78bfa; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; margin-top: 10px; }
+  .result-box { text-align: center; padding: 28px; border-radius: 12px; margin-bottom: 28px; border: 2px solid; display: none; }
+  .result-benign { background: #052e16; border-color: #16a34a; display: block; }
+  .result-malignant { background: #2d0b0b; border-color: #dc2626; display: block; }
+  .result-label { font-size: 0.8rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; letter-spacing: 0.08em; }
+  .result-value { font-size: 2.2rem; font-weight: 700; }
+  .benign-text { color: #4ade80; }
+  .malignant-text { color: #f87171; }
+  .confidence { font-size: 0.88rem; color: #94a3b8; margin-top: 8px; }
+  .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 28px; margin-bottom: 20px; }
+  .card h2 { font-size: 0.7rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid #334155; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+  .field label { display: block; font-size: 0.7rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .field input { width: 100%; padding: 9px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 0.88rem; transition: border 0.2s; }
+  .field input:focus { outline: none; border-color: #7c3aed; }
+  .btn { width: 100%; padding: 14px; background: #7c3aed; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+  .btn:hover { background: #6d28d9; }
+  .btn-reset { background: #1e293b; border: 1px solid #334155; color: #94a3b8; margin-top: 8px; }
+  .btn-reset:hover { border-color: #7c3aed; color: #a78bfa; background: #1e293b; }
+  .disclaimer { text-align: center; font-size: 0.72rem; color: #475569; margin-top: 20px; }
+  .footer { text-align: center; margin-top: 36px; color: #475569; font-size: 0.78rem; }
+  .footer a { color: #7c3aed; text-decoration: none; }
+  .sample-btn { font-size: 0.75rem; padding: 6px 14px; background: transparent; border: 1px solid #334155; color: #94a3b8; border-radius: 6px; cursor: pointer; margin-bottom: 16px; transition: all 0.2s; }
+  .sample-btn:hover { border-color: #7c3aed; color: #a78bfa; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Breast Cancer Prediction</h1>
+    <p>Enter tumor cell measurements to predict malignancy</p>
+    <span class="badge">Model Accuracy: 96.5% &nbsp;·&nbsp; Logistic Regression &nbsp;·&nbsp; Wisconsin BRCA Dataset</span>
+  </header>
+
+  <div id="resultBox" class="result-box">
+    <div class="result-label">Prediction Result</div>
+    <div id="resultValue" class="result-value"></div>
+    <div id="confidenceValue" class="confidence"></div>
+  </div>
+
+  <button class="sample-btn" onclick="fillSample()">Fill Sample Values (Benign case)</button>
+
+  <form id="predForm">
+    <div class="card">
+      <h2>Mean Values</h2>
+      <div class="grid">
+        <div class="field"><label>Radius Mean</label><input type="number" id="f0" step="any" placeholder="e.g. 13.54" required></div>
+        <div class="field"><label>Texture Mean</label><input type="number" id="f1" step="any" placeholder="e.g. 14.36" required></div>
+        <div class="field"><label>Perimeter Mean</label><input type="number" id="f2" step="any" placeholder="e.g. 87.46" required></div>
+        <div class="field"><label>Area Mean</label><input type="number" id="f3" step="any" placeholder="e.g. 566.3" required></div>
+        <div class="field"><label>Smoothness Mean</label><input type="number" id="f4" step="any" placeholder="e.g. 0.09779" required></div>
+        <div class="field"><label>Compactness Mean</label><input type="number" id="f5" step="any" placeholder="e.g. 0.08129" required></div>
+        <div class="field"><label>Concavity Mean</label><input type="number" id="f6" step="any" placeholder="e.g. 0.06664" required></div>
+        <div class="field"><label>Concave Points Mean</label><input type="number" id="f7" step="any" placeholder="e.g. 0.04781" required></div>
+        <div class="field"><label>Symmetry Mean</label><input type="number" id="f8" step="any" placeholder="e.g. 0.1885" required></div>
+        <div class="field"><label>Fractal Dim Mean</label><input type="number" id="f9" step="any" placeholder="e.g. 0.05766" required></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Standard Error Values</h2>
+      <div class="grid">
+        <div class="field"><label>Radius SE</label><input type="number" id="f10" step="any" placeholder="e.g. 0.2699" required></div>
+        <div class="field"><label>Texture SE</label><input type="number" id="f11" step="any" placeholder="e.g. 0.7886" required></div>
+        <div class="field"><label>Perimeter SE</label><input type="number" id="f12" step="any" placeholder="e.g. 2.058" required></div>
+        <div class="field"><label>Area SE</label><input type="number" id="f13" step="any" placeholder="e.g. 23.56" required></div>
+        <div class="field"><label>Smoothness SE</label><input type="number" id="f14" step="any" placeholder="e.g. 0.008462" required></div>
+        <div class="field"><label>Compactness SE</label><input type="number" id="f15" step="any" placeholder="e.g. 0.0146" required></div>
+        <div class="field"><label>Concavity SE</label><input type="number" id="f16" step="any" placeholder="e.g. 0.02387" required></div>
+        <div class="field"><label>Concave Points SE</label><input type="number" id="f17" step="any" placeholder="e.g. 0.01315" required></div>
+        <div class="field"><label>Symmetry SE</label><input type="number" id="f18" step="any" placeholder="e.g. 0.0198" required></div>
+        <div class="field"><label>Fractal Dim SE</label><input type="number" id="f19" step="any" placeholder="e.g. 0.0023" required></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Worst Values</h2>
+      <div class="grid">
+        <div class="field"><label>Radius Worst</label><input type="number" id="f20" step="any" placeholder="e.g. 15.11" required></div>
+        <div class="field"><label>Texture Worst</label><input type="number" id="f21" step="any" placeholder="e.g. 19.26" required></div>
+        <div class="field"><label>Perimeter Worst</label><input type="number" id="f22" step="any" placeholder="e.g. 99.7" required></div>
+        <div class="field"><label>Area Worst</label><input type="number" id="f23" step="any" placeholder="e.g. 711.2" required></div>
+        <div class="field"><label>Smoothness Worst</label><input type="number" id="f24" step="any" placeholder="e.g. 0.144" required></div>
+        <div class="field"><label>Compactness Worst</label><input type="number" id="f25" step="any" placeholder="e.g. 0.1773" required></div>
+        <div class="field"><label>Concavity Worst</label><input type="number" id="f26" step="any" placeholder="e.g. 0.239" required></div>
+        <div class="field"><label>Concave Points Worst</label><input type="number" id="f27" step="any" placeholder="e.g. 0.1288" required></div>
+        <div class="field"><label>Symmetry Worst</label><input type="number" id="f28" step="any" placeholder="e.g. 0.2977" required></div>
+        <div class="field"><label>Fractal Dim Worst</label><input type="number" id="f29" step="any" placeholder="e.g. 0.07259" required></div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn">Run Prediction</button>
+    <button type="button" class="btn btn-reset" onclick="resetForm()">Reset</button>
+  </form>
+
+  <p class="disclaimer">⚠ This tool is for educational purposes only and is not a substitute for medical diagnosis.</p>
+
+  <div class="footer">
+    Built by <a href="https://github.com/abdulrafay1942" target="_blank">Abdul Rafay</a> &nbsp;·&nbsp;
+    <a href="https://www.linkedin.com/in/abdul-rafay-04397332a" target="_blank">LinkedIn</a> &nbsp;·&nbsp;
+    <a href="https://abdulrafay1942.github.io" target="_blank">Portfolio</a>
+  </div>
+</div>
+
+<script>
+// ── Model coefficients extracted from trained LogisticRegression ──────────
+const COEF = [0.4814334900567964,0.35508113566976396,0.4604704974745755,0.5294046337903356,0.01611389466306529,-0.41134921451007694,0.7307229418861239,0.9077575483641042,0.16074457699525665,-0.26463876160324135,1.2184070056783587,0.1610692236061812,0.6678883870941473,0.8657535646812526,-0.17821204671058116,-0.8284474301652255,-0.12413252670166793,0.37011438867247287,-0.08815810757422719,-0.8107283450637283,0.9043566464482132,1.1049122341740483,0.766251305870559,0.8724351710987089,0.6238650708778601,0.04455959865272665,0.8250749932896203,0.8782681362532853,0.6860717394571092,0.6593241587004851];
+const INTERCEPT = -0.4006881879594711;
+const SCALER_MEAN = [14.081046153846154,19.1989010989011,91.6627032967033,650.6283516483517,0.09675938461538462,0.10520591208791209,0.08891920153846154,0.04903258021978022,0.1816668131868132,0.06298916483516484,0.405003956043956,1.2142153846153845,2.8506105494505496,40.12793846153846,0.007051665934065934,0.025623320879120882,0.031915766153846156,0.011754441758241758,0.020718369230769234,0.0038158641758241755,16.217140659340657,25.52742857142857,106.83960439560441,875.178021978022,0.13282145054945052,0.2570808131868132,0.2731500571428571,0.11461459340659341,0.2916435164835165,0.08437832967032967];
+const SCALER_SCALE = [3.525368807775558,4.296679282696166,24.20752055402423,353.81384682792316,0.014075898521293102,0.05233889651438899,0.07814596221695991,0.0382371800576069,0.028025635395023094,0.007227901840561022,0.2813275779908466,0.5466271203758066,2.01675419205847,46.94198609483925,0.0029148198177106305,0.01732927557144564,0.030635494858053842,0.00579587837339047,0.008483052869500789,0.002601952683999379,4.8409939037164,6.169820502746149,33.416947826534056,571.6287058215012,0.02267278561549586,0.1573834767553521,0.2062397156001741,0.06465303995979982,0.06436324728306643,0.01843063957143638];
+
+// Sample benign values
+const SAMPLE = [13.54,14.36,87.46,566.3,0.09779,0.08129,0.06664,0.04781,0.1885,0.05766,0.2699,0.7886,2.058,23.56,0.008462,0.0146,0.02387,0.01315,0.0198,0.0023,15.11,19.26,99.7,711.2,0.144,0.1773,0.239,0.1288,0.2977,0.07259];
+
+function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+
+function predict(features) {
+  // Scale features
+  const scaled = features.map((v, i) => (v - SCALER_MEAN[i]) / SCALER_SCALE[i]);
+  // Dot product + intercept
+  let z = INTERCEPT;
+  for (let i = 0; i < scaled.length; i++) z += scaled[i] * COEF[i];
+  const probMalignant = sigmoid(z);
+  const probBenign = 1 - probMalignant;
+  return probMalignant >= 0.5
+    ? { label: "Malignant", confidence: (probMalignant * 100).toFixed(2) }
+    : { label: "Benign",    confidence: (probBenign    * 100).toFixed(2) };
+}
+
+document.getElementById("predForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const features = [];
+  for (let i = 0; i < 30; i++) {
+    const val = parseFloat(document.getElementById("f" + i).value);
+    if (isNaN(val)) { alert("Please fill all fields."); return; }
+    features.push(val);
+  }
+  const result = predict(features);
+  const box = document.getElementById("resultBox");
+  const val = document.getElementById("resultValue");
+  const conf = document.getElementById("confidenceValue");
+
+  box.className = "result-box " + (result.label === "Benign" ? "result-benign" : "result-malignant");
+  val.className = "result-value " + (result.label === "Benign" ? "benign-text" : "malignant-text");
+  val.textContent = result.label;
+  conf.textContent = "Confidence: " + result.confidence + "%";
+  box.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
+function fillSample() {
+  SAMPLE.forEach((v, i) => { document.getElementById("f" + i).value = v; });
+}
+
+function resetForm() {
+  for (let i = 0; i < 30; i++) document.getElementById("f" + i).value = "";
+  const box = document.getElementById("resultBox");
+  box.className = "result-box";
+}
+</script>
+</body>
+</html>
